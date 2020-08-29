@@ -9,6 +9,6 @@ DATABASES = {
         'PORT': 3306,  # 端口
         'NAME': 'typeidea',  # 数据库名称
         'USER': 'root',  # 用户
-        'PASSWORD': '666'  # 密码
+        'PASSWORD': 'Cmvcadmin2020!'  # 密码
     }
 }
