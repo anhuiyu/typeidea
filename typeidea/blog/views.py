@@ -4,6 +4,7 @@ from config.models import SideBar
 from django.http import HttpResponse
 from django.views.generic import DetailView,ListView
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 # Create your views here.
 
 def post_list(request, category_id=None,tag_id=None):
@@ -35,13 +36,6 @@ def post_detail(request, post_id=None):
     context.update(Category.get_navs())
     return render(request,'blog/detail.html',context=context)
 
-
-
-# class PostListView(ListView):
-#     queryset = Post.latest_posts()
-#     paginate_by = 1#设定每页展示一条数据
-#     context_object_name = 'post_list'
-#     template_name = 'blog/list.html'
 
 class CommViewMixin:
     def get_context_data(self,**kwargs):
@@ -93,3 +87,25 @@ class TagView(IndexView):
         queryset=super().get_queryset()
         tag_id=self.kwargs.get('tag_id')
         return queryset.filter(category_id=category_id)
+
+class SearchView(IndexView):
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data()
+        context.update({
+            'keyword':self.request.GET.get('keyword','')
+        })
+        return context
+    def get_queryset(self):
+        queryset=super().get_queryset()
+        keyword=self.request.GET.get('keyword')
+        if not  keyword:
+            return queryset
+        return  queryset.filter(Q(title__icontains=keyword)|Q(desc__icontains=keyword))
+
+class AuthorView(IndexView):
+    def get_queryset(self):
+        queryset=super().get_queryset()
+        author_id=self.kwargs.get('owner_id')
+        return queryset.filter(owner_id=author_id)
+
+
